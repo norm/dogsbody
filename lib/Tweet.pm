@@ -2,6 +2,8 @@ package Tweet;
 
 use Modern::Perl '2013';
 
+use Ouch qw( :traditional );
+
 
 
 # User-initiated tweet, using centrally configured twitter account
@@ -12,7 +14,12 @@ sub post {
     my $jigsaw  = shift;
     my $request = shift;
     
-    $twitter->update( $request->param('tweet') );
+    try {
+        $twitter->update( $request->param('tweet') );
+    };
+    if ( catch_all ) {
+        warn "Error posting update occured: $@";
+    }
     
     return [
         302,

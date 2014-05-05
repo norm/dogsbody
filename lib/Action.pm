@@ -20,8 +20,14 @@ sub post {
 
     throw 404 unless $action;
 
-    $twitter->update( $action->{'status'} )
-        if 'tweet' eq $action->{'action'};
+    if ( 'tweet' eq $action->{'action'} ) {
+        try {
+            $twitter->update( $action->{'status'} );
+        };
+        if ( catch_all ) {
+            warn "Error posting update occured: $@";
+        }
+    }
 
     return [
         302,
