@@ -27,6 +27,7 @@ sub get {
             },
             {
                 actions => \@actions,
+                context => Context::get_context( $config ),
                 request => \$request,
                 session => $request->session,
             },

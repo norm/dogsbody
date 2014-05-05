@@ -2,6 +2,7 @@ package Action;
 
 use Modern::Perl '2013';
 
+use Context;
 use Ouch qw( :traditional );
 
 
@@ -22,7 +23,8 @@ sub post {
 
     if ( 'tweet' eq $action->{'action'} ) {
         try {
-            $twitter->update( $action->{'status'} );
+            my $text = Context::expand_context( $config, $action->{'status'} );
+            $twitter->update( $text );
         };
         if ( catch_all ) {
             warn "Error posting update occured: $@";

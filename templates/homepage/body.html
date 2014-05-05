@@ -13,6 +13,8 @@
 
   <hr>
 
+  <pre>context: ${context}</pre>
+
   <ul>
     {{ foreach my $action ( @actions ) { }}
       <li>
@@ -26,6 +28,11 @@
   <form method='post' action='/tweet'>
     <input type='text' name='tweet'>
     <button>Tweet</button>
+  </form>
+
+  <form method='post' action='/context'>
+    <input type='text' name='context' value='${context}'>
+    <button>Set context</button>
   </form>
 
   <hr>

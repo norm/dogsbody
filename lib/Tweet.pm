@@ -2,6 +2,7 @@ package Tweet;
 
 use Modern::Perl '2013';
 
+use Context;
 use Ouch qw( :traditional );
 
 
@@ -15,7 +16,8 @@ sub post {
     my $request = shift;
     
     try {
-        $twitter->update( $request->param('tweet') );
+        my $text = Context::expand_context( $config, $request->param('tweet') );
+        $twitter->update( $text );
     };
     if ( catch_all ) {
         warn "Error posting update occured: $@";
