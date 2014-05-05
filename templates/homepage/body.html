@@ -1,1 +1,25 @@
-<h1>homepage</h1>
+{{ if ( $session{'twitter_name'} ) { }}
+
+  <h1>Logged in</h1>
+  <p>Signed is as '${session{'twitter_name'}}'</p>
+  <pre>{{
+    use Data::Dumper::Concise;
+    $RENDER .= Dumper $request->session;
+  }}</pre>
+  
+  <form method='post' action='/logout'>
+    <button>Logout</button>
+  </form>
+  
+{{ } else { }}
+
+  <h1>Log in</h1>
+
+  <form method='post' action='/login'>
+    <button>
+      <img src='https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-l.png'
+           width='151' height='24' alt='Sign in with Twitter'>
+    </button>
+  </form>
+  
+{{ } }}

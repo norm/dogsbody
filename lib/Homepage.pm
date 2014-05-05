@@ -5,7 +5,9 @@ use Modern::Perl '2013';
 
 
 sub get {
-    my $jigsaw = shift;
+    my $config  = shift;
+    my $twitter = shift;
+    my $jigsaw  = shift;
     my $request = shift;
 
     my( $homepage, $errors ) = $jigsaw->render(

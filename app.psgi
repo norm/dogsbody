@@ -4,11 +4,14 @@ use Modern::Perl '2013';
 use Config::Std;
 use Net::Twitter;
 use Ouch qw( :traditional );
+use Plack::Builder;
 use Plack::Request;
 use Template::Jigsaw;
 use URI::Dispatch;
 
 use Homepage;
+use Login;
+use Logout;
 
 read_config 'app.conf' => my %config;
 
@@ -23,6 +26,8 @@ my $twitter = Net::Twitter->new(
 
 my $dispatch = URI::Dispatch->new();
 $dispatch->add( '/', 'Homepage' );
+$dispatch->add( '/login', 'Login' );
+$dispatch->add( '/logout', 'Logout' );
 
 my $app = sub {
     my $env = shift;
@@ -30,7 +35,7 @@ my $app = sub {
     my $response;
     
     try {
-        $response = $dispatch->dispatch( $req, $jigsaw );
+        $response = $dispatch->dispatch( $req, \%config, $twitter, $jigsaw );
     };
     if ( catch 404 ) {
         $response = [ 404, [], [ 'Bummer' ] ];
@@ -38,3 +43,8 @@ my $app = sub {
     
     return $response;
 };
+
+builder {
+    enable 'Session';
+    $app;
+}
