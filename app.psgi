@@ -3,6 +3,11 @@ use Modern::Perl '2013';
 
 use Config::Std;
 use Net::Twitter;
+use Ouch qw( :traditional );
+use Plack::Request;
+use URI::Dispatch;
+
+use Homepage;
 
 read_config 'app.conf' => my %config;
 
@@ -13,4 +18,20 @@ my $twitter = Net::Twitter->new(
         ssl                 => 1,
     );
 
-say $twitter->get_authorization_url( callback => $config{'url'} );
+my $dispatch = URI::Dispatch->new();
+$dispatch->add( '/', 'Homepage' );
+
+my $app = sub {
+    my $env = shift;
+    my $req = Plack::Request->new( $env );
+    my $response;
+    
+    try {
+        $response = $dispatch->dispatch( $req );
+    };
+    if ( catch 404 ) {
+        $response = [ 404, [], [ 'Bummer' ] ];
+    }
+    
+    return $response;
+};
