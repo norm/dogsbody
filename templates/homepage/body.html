@@ -7,15 +7,29 @@
     $RENDER .= Dumper $request->session;
   }}</pre>
   
+  <form method='post' action='/logout'>
+    <button>Logout</button>
+  </form>
+
+  <hr>
+
+  <ul>
+    {{ foreach my $action ( @actions ) { }}
+      <li>
+        <form method='post' action='/action/${action->{"_key"}}'>
+          <button>${action->{'button'}}</button>
+        </form>
+      </li>
+    {{ } }}
+  </ul>
+
   <form method='post' action='/tweet'>
     <input type='text' name='tweet'>
     <button>Tweet</button>
   </form>
 
-  <form method='post' action='/logout'>
-    <button>Logout</button>
-  </form>
-  
+  <hr>
+
 {{ } else { }}
 
   <h1>Log in</h1>

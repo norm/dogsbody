@@ -14,6 +14,7 @@ use Homepage;
 use Login;
 use Logout;
 use Tweet;
+use Action;
 
 use constant ONE_DAY => ( 60 * 60 * 24 );
 
@@ -35,6 +36,7 @@ $dispatch->add( '/', 'Homepage' );
 $dispatch->add( '/login', 'Login' );
 $dispatch->add( '/logout', 'Logout' );
 $dispatch->add( '/tweet', 'Tweet' );
+$dispatch->add( '/action/#slug:slug', 'Action' );
 
 my $app = sub {
     my $env = shift;

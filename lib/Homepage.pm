@@ -10,6 +10,15 @@ sub get {
     my $jigsaw  = shift;
     my $request = shift;
 
+    my @actions;
+    foreach my $key ( keys %$config ) {
+        my %action = %{ $config->{$key} };
+        $action{'_key'} = $key;
+        
+        push @actions, \%action
+            if $config->{$key}{'action'};
+    }
+    
     my( $homepage, $errors ) = $jigsaw->render(
             'homepage',
             'html',
@@ -17,6 +26,7 @@ sub get {
                 page => 'homepage',
             },
             {
+                actions => \@actions,
                 request => \$request,
                 session => $request->session,
             },
