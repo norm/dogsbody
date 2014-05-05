@@ -4,6 +4,7 @@ use Modern::Perl '2013';
 
 use Ouch qw( :traditional );
 use Redis;
+use Permissions;
 
 
 
@@ -12,6 +13,8 @@ sub post {
     my $twitter = shift;
     my $jigsaw  = shift;
     my $request = shift;
+
+    throw 403 unless Permissions::is_authenticated( $request );
 
     my $redis = Redis->new();
     my $key   = sprintf '%s:context', $config->{''}{'redis_prefix'};

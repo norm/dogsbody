@@ -4,6 +4,7 @@ use Modern::Perl '2013';
 
 use Context;
 use Ouch qw( :traditional );
+use Permissions;
 
 
 
@@ -15,6 +16,8 @@ sub post {
     my $jigsaw  = shift;
     my $request = shift;
     my $args    = shift;
+
+    throw 403 unless Permissions::is_authenticated( $request );
 
     my $slug = $args->{'slug'};
     my $action = $config->{$slug};

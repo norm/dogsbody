@@ -4,6 +4,7 @@ use Modern::Perl '2013';
 
 use Context;
 use Ouch qw( :traditional );
+use Permissions;
 
 
 
@@ -15,6 +16,8 @@ sub post {
     my $jigsaw  = shift;
     my $request = shift;
     
+    throw 403 unless Permissions::is_authenticated( $request );
+
     try {
         my $text = Context::expand_context( $config, $request->param('tweet') );
         $twitter->update( $text );
