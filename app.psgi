@@ -22,15 +22,6 @@ read_config 'app.conf' => my %config;
 
 my $jigsaw = Template::Jigsaw->new( 'templates' );
 
-my $twitter = Net::Twitter->new(
-        consumer_key        => $config{''}{'key'},
-        consumer_secret     => $config{''}{'secret'},
-        access_token        => $config{''}{'access_token'},
-        access_token_secret => $config{''}{'access_secret'},
-        traits              => [ 'API::RESTv1_1', 'OAuth', ],
-        ssl                 => 1,
-    );
-
 my $dispatch = URI::Dispatch->new();
 $dispatch->add( '/', 'Homepage' );
 $dispatch->add( '/login', 'Login' );
@@ -43,6 +34,15 @@ my $app = sub {
     my $req = Plack::Request->new( $env );
     my $response;
     
+    my $twitter = Net::Twitter->new(
+            consumer_key        => $config{''}{'key'},
+            consumer_secret     => $config{''}{'secret'},
+            access_token        => $config{''}{'access_token'},
+            access_token_secret => $config{''}{'access_secret'},
+            traits              => [ 'API::RESTv1_1', 'OAuth', ],
+            ssl                 => 1,
+        );
+
     try {
         $response = $dispatch->dispatch( $req, \%config, $twitter, $jigsaw );
     };

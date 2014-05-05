@@ -15,6 +15,9 @@ sub post {
             callback => sprintf '%s/login', $config->{''}{'url'}
         );
 
+    $request->session->{'twitter_token'}  = $twitter->request_token;
+    $request->session->{'twitter_secret'} = $twitter->request_token_secret;
+
     return [
         302,
         [
@@ -30,6 +33,9 @@ sub get {
     my $twitter = shift;
     my $jigsaw  = shift;
     my $request = shift;
+
+    $twitter->request_token( $request->session->{'twitter_token'} );
+    $twitter->request_token_secret( $request->session->{'twitter_secret'} );
 
     my( $access_token, $access_token_secret, $user_id, $screen_name )
         = $twitter->request_access_token(
