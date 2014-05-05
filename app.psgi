@@ -6,12 +6,15 @@ use Net::Twitter;
 use Ouch qw( :traditional );
 use Plack::Builder;
 use Plack::Request;
+use Plack::Session::Store::Redis;
 use Template::Jigsaw;
 use URI::Dispatch;
 
 use Homepage;
 use Login;
 use Logout;
+
+use constant ONE_DAY => ( 60 * 60 * 24 );
 
 read_config 'app.conf' => my %config;
 
@@ -45,6 +48,10 @@ my $app = sub {
 };
 
 builder {
-    enable 'Session';
+    enable 'Session',
+        store => Plack::Session::Store::Redis->new(
+            prefix  => "${config{''}{'redis_prefix'}}:session:",
+            expires => ONE_DAY,
+        );
     $app;
 }
