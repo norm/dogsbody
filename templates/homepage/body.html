@@ -1,12 +1,7 @@
 {{ if ( $session{'twitter_name'} ) { }}
 
-  <h1>Logged in</h1>
-  <p>Signed is as '${session{'twitter_name'}}'</p>
-  <pre>{{
-    use Data::Dumper::Concise;
-    $RENDER .= Dumper $request->session;
-  }}</pre>
-  
+  <h1>Logged in as ${session{'twitter_name'}}</h1>
+
   <form method='post' action='/logout'>
     <button>Logout</button>
   </form>

@@ -27,20 +27,36 @@ sub post {
     ];
 }
 
-# Callback request from Twitter after authorising the app.
+# Callback request from Twitter after authorising the app, or plain login page.
 sub get {
     my $config  = shift;
     my $twitter = shift;
     my $jigsaw  = shift;
     my $request = shift;
 
+    my $verifier = $request->param('oauth_verifier');
+
+    if ( defined $verifier ) {
+        return get_with_verification(
+                $config, $twitter, $jigsaw, $request, $verifier
+            );
+    }
+    else {
+        return get_plain_page( $config, $twitter, $jigsaw, $request );
+    }
+}
+sub get_with_verification {
+    my $config   = shift;
+    my $twitter  = shift;
+    my $jigsaw   = shift;
+    my $request  = shift;
+    my $verifier = shift;
+
     $twitter->request_token( $request->session->{'twitter_token'} );
     $twitter->request_token_secret( $request->session->{'twitter_secret'} );
 
     my( $access_token, $access_token_secret, $user_id, $screen_name )
-        = $twitter->request_access_token(
-              verifier => $request->param('oauth_verifier')
-          );
+        = $twitter->request_access_token( verifier => $verifier );
     
     if ( defined $access_token ) {
         $request->session->{'auth_type'}      = 'twitter';
@@ -56,6 +72,30 @@ sub get {
             'Location' => '/',
         ],
         []
+    ];
+}
+sub get_plain_page {
+    my $config  = shift;
+    my $twitter = shift;
+    my $jigsaw  = shift;
+    my $request = shift;
+
+    my( $homepage, $errors ) = $jigsaw->render(
+            'login',
+            'html',
+            {
+                page => 'login',
+            },
+            {
+                request => \$request,
+                session => $request->session,
+            },
+        );
+    
+    return [
+        200,
+        [],
+        [ $homepage ]
     ];
 }
 
