@@ -5,11 +5,14 @@ use Config::Std;
 use Net::Twitter;
 use Ouch qw( :traditional );
 use Plack::Request;
+use Template::Jigsaw;
 use URI::Dispatch;
 
 use Homepage;
 
 read_config 'app.conf' => my %config;
+
+my $jigsaw = Template::Jigsaw->new( 'templates' );
 
 my $twitter = Net::Twitter->new(
         consumer_key        => $config{''}{'key'},
@@ -27,7 +30,7 @@ my $app = sub {
     my $response;
     
     try {
-        $response = $dispatch->dispatch( $req );
+        $response = $dispatch->dispatch( $req, $jigsaw );
     };
     if ( catch 404 ) {
         $response = [ 404, [], [ 'Bummer' ] ];
