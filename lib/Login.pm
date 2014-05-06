@@ -45,6 +45,7 @@ sub get {
         return get_plain_page( $config, $twitter, $jigsaw, $request );
     }
 }
+
 sub get_with_verification {
     my $config   = shift;
     my $twitter  = shift;
@@ -59,11 +60,13 @@ sub get_with_verification {
         = $twitter->request_access_token( verifier => $verifier );
     
     if ( defined $access_token ) {
-        $request->session->{'auth_type'}      = 'twitter';
-        $request->session->{'twitter_name'}   = $screen_name;
-        $request->session->{'twitter_id'}     = $user_id;
-        $request->session->{'twitter_secret'} = $access_token;
-        $request->session->{'twitter_token'}  = $access_token_secret;
+        if ( user_is_allowed( $config, $screen_name ) ) {
+            $request->session->{'auth_type'}      = 'twitter';
+            $request->session->{'twitter_name'}   = $screen_name;
+            $request->session->{'twitter_id'}     = $user_id;
+            $request->session->{'twitter_secret'} = $access_token;
+            $request->session->{'twitter_token'}  = $access_token_secret;
+        }
     }
 
     return [
@@ -74,6 +77,18 @@ sub get_with_verification {
         []
     ];
 }
+sub user_is_allowed {
+    my $config = shift;
+    my $user   = shift;
+
+    # if there's a 'users' section, this user must be in it, or no dice
+    return defined $config->{'users'} 
+        && defined $config->{'users'}{$user};
+
+    # no 'users' section means anyone can use it
+    return 1;
+}
+
 sub get_plain_page {
     my $config  = shift;
     my $twitter = shift;
